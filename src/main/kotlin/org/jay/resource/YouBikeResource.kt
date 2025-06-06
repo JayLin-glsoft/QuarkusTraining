@@ -19,7 +19,7 @@ class YouBikeResource {
     }
 
     @Inject
-    lateinit var youBikeService: YouBikeService // 使用 lateinit 進行注入
+    private lateinit var youBikeService: YouBikeService // 使用 lateinit 進行注入
 
     @GET
     @Path("/all")
