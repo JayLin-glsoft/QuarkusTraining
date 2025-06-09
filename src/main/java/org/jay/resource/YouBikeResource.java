@@ -1,4 +1,4 @@
-package main.java.org.jay.resource;
+package org.jay.resource;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -7,8 +7,8 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import main.java.org.jay.model.YouBikeStation;
-import main.java.org.jay.service.YouBikeService;
+import org.jay.model.YouBikeStation;
+import org.jay.service.YouBikeService;
 import org.jboss.logging.Logger;
 
 import java.util.List;

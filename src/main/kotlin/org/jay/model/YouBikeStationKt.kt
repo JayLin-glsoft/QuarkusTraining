@@ -1,10 +1,10 @@
-package main.kotlin.org.jay.model
+package org.jay.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class YouBikeStation(
+data class YouBikeStationKt(
     @JsonProperty("sno") // 站點代號
     val stationNo: String?,
 

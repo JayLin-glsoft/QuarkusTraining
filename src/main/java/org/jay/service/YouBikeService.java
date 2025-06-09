@@ -1,11 +1,11 @@
-package main.java.org.jay.service;
+package org.jay.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import main.java.org.jay.model.YouBikeStation;
+import org.jay.model.YouBikeStation;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 

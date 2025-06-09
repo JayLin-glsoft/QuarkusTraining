@@ -6,8 +6,8 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import main.java.org.jay.service.YouBikeService;
-import main.java.org.jay.model.YouBikeStation;
+import org.jay.service.YouBikeService;
+import org.jay.model.YouBikeStation;
 
 import java.util.Collections;
 import java.util.List;

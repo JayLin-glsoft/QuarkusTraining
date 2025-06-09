@@ -5,10 +5,10 @@ import io.quarkus.test.junit.QuarkusTest
 import io.restassured.http.ContentType
 import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
-import main.kotlin.org.jay.model.YouBikeStation
-import main.kotlin.org.jay.service.YouBikeService
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Matchers.hasSize
+import org.jay.model.YouBikeStationKt
+import org.jay.service.YouBikeServiceKt
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -17,22 +17,22 @@ import org.mockito.Mockito
 class YouBikeResourceKotlinTest {
 
     @InjectMock
-    lateinit var youBikeService: YouBikeService
+    lateinit var youBikeService: YouBikeServiceKt
 
-    private lateinit var station1: YouBikeStation
-    private lateinit var station2: YouBikeStation
+    private lateinit var station1: YouBikeStationKt
+    private lateinit var station2: YouBikeStationKt
 
     @BeforeEach
     fun setUp() {
-        station1 = YouBikeStation(
-            stationNo = "500101001", stationName = "捷運市府站(3號出口)", totalSpaces = 30, availableBikes = 10,
-            area = "信義區", updateTime = "20250606174000", latitude = 25.040857, longitude = 121.567904,
-            address = "忠孝東路/松仁路(東南側)", availableSpaces = 20, active = "1"
+        station1 = YouBikeStationKt(
+            "500101001", "捷運市府站(3號出口)", 30, 10,
+            "信義區", "20250606174000", 25.040857, 121.567904,
+            "忠孝東路/松仁路(東南側)", 20, "1"
         )
-        station2 = YouBikeStation(
-            stationNo = "500101002", stationName = "捷運國父紀念館站(2號出口)", totalSpaces = 40, availableBikes = 5,
-            area = "信義區", updateTime = "20250606174000", latitude = 25.041254, longitude = 121.55742,
-            address = "忠孝東路四段/光復南路口", availableSpaces = 35, active = "1"
+        station2 = YouBikeStationKt(
+            "500101002", "捷運國父紀念館站(2號出口)", 40, 5,
+            "信義區", "20250606174000", 25.041254, 121.55742,
+            "忠孝東路四段/光復南路口", 35, "1"
         )
     }
 
@@ -46,9 +46,9 @@ class YouBikeResourceKotlinTest {
             statusCode(200)
             contentType(ContentType.JSON)
             body("$", hasSize<Any>(2))
-            body("[0].sno", `is`("500101001"))
-            body("[0].sna", `is`("捷運市府站(3號出口)"))
-            body("[1].sno", `is`("500101002"))
+            body("[0].stationNo", `is`("500101001"))
+            body("[0].stationName", `is`("捷運市府站(3號出口)"))
+            body("[1].stationNo", `is`("500101002"))
         }
     }
 
@@ -74,8 +74,8 @@ class YouBikeResourceKotlinTest {
         } Then {
             statusCode(200)
             contentType(ContentType.JSON)
-            body("sno", `is`(stationId))
-            body("sna", `is`("捷運市府站(3號出口)"))
+            body("stationNo", `is`(stationId))
+            body("stationName", `is`("捷運市府站(3號出口)"))
         }
     }
 

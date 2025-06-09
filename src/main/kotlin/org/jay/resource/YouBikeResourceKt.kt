@@ -1,4 +1,4 @@
-package main.kotlin.org.jay.resource
+package org.jay.resource
 
 import jakarta.inject.Inject
 import jakarta.ws.rs.GET
@@ -7,19 +7,19 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import main.kotlin.org.jay.service.YouBikeService
+import org.jay.service.YouBikeServiceKt
 import org.jboss.logging.Logger
 
 @Path("/kotlin_api/youbike")
 @Produces(MediaType.APPLICATION_JSON)
-class YouBikeResource {
+class YouBikeResourceKt {
 
     companion object {
-        private val LOG: Logger = Logger.getLogger(YouBikeResource::class.java.name)
+        private val LOG: Logger = Logger.getLogger(YouBikeResourceKt::class.java.name)
     }
 
     @Inject
-    private lateinit var youBikeService: YouBikeService // 使用 lateinit 進行注入
+    private lateinit var youBikeService: YouBikeServiceKt // 使用 lateinit 進行注入
 
     @GET
     @Path("/all")
@@ -32,6 +32,7 @@ class YouBikeResource {
                 .entity("{\"message\": \"No YouBike stations data available.\"}")
                 .build()
         } else {
+            LOG.info("Received data: $stations")
             Response.ok(stations).build()
         }
     }
