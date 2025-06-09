@@ -9,9 +9,3 @@
 > ![java-all.png](image/java-all.png)
 * GET /api/youbike/station/{id}：查詢指定站點資訊。
 > ![java-select.png](image/java-select.png)
-
-> #### Kotlin
-> * GET /kotlin_api/youbike/all：YouBike 即時 JSON 資料。
-> > ![kotlin-all.png](image/kotlin-all.png)
-> * GET /kotlin_api/youbike/station/{id}：查詢指定站點資訊。
-> > ![kotlin-select.png](image/kotlin-select.png)
