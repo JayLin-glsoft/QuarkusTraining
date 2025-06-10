@@ -1,15 +1,13 @@
 package org.jay.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jay.client.YouBikeApiClient;
 import org.jay.model.YouBikeStation;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -19,24 +17,17 @@ public class YouBikeService {
 
     private static final Logger LOG = Logger.getLogger(YouBikeService.class.getName());
 
-    @ConfigProperty(name = "youbike.api.url")
-    String youbikeApiUrl;
+    @Inject
+    @RestClient
+    YouBikeApiClient youBikeApiClient;
+
+    @ConfigProperty(name = "quarkus.rest-client.you-bike-api.url")
+    String apiClientUrl;
 
     private List<YouBikeStation> fetchAllStationsFromExternalApi() {
-        try (Client client = ClientBuilder.newClient()) {
-            LOG.infof("Fetching YouBike data from URL: %s", youbikeApiUrl);
-            Response response = client.target(youbikeApiUrl)
-                    .request(MediaType.APPLICATION_JSON)
-                    .get();
-
-            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                YouBikeStation[] stationsArray = response.readEntity(YouBikeStation[].class);
-                LOG.infof("Successfully fetched %d stations.", stationsArray.length);
-                return Arrays.asList(stationsArray);
-            } else {
-                LOG.errorf("Error fetching YouBike data: Status %d - %s", response.getStatus(), response.readEntity(String.class));
-                return Collections.emptyList();
-            }
+        try {
+            LOG.infof("Fetching YouBike data from URL: %s", apiClientUrl);
+            return youBikeApiClient.getYouBikeList();
         } catch (Exception e) {
             LOG.error("Exception while fetching YouBike data", e);
             return Collections.emptyList();

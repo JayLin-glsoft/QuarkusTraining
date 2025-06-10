@@ -1,0 +1,19 @@
+quarkus:
+  http:
+    port: 8080
+  application:
+    name: youbike-api-java
+    version: 1.0.0
+  rest-client:
+    you-bike-api:
+      url: "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json"
+      scope: javax.inject.Singleton
+      connect-timeout: 5000
+      read-timeout: 10000
+  log:
+    level: INFO
+    category:
+      "org.jay":
+        level: DEBUG
+    console:
+      format: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c{1.}] (%t) %s%e%n"
