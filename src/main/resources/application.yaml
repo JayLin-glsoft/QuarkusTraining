@@ -1,19 +1,44 @@
+# Quarkus 框架的主要設定
 quarkus:
+  # HTTP 伺服器相關設定
   http:
+    # 設定應用程式監聽的 HTTP 連接埠
     port: 8080
+  # 應用程式基本資訊設定
   application:
+    # 應用程式名稱
     name: youbike-api-java
+    # 應用程式版本
     version: 1.0.0
+  # REST 客戶端設定
   rest-client:
+    # 'you-bike-api' 是客戶端介面的設定 ID (對應 @RegisterRestClient 的 configKey)
     you-bike-api:
+      # API 的目標 URL
       url: "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json"
+      # 設定此 REST 客戶端的 CDI Bean 範圍為 Singleton (單例)
       scope: javax.inject.Singleton
+      # 連線逾時時間 (單位：毫秒)
       connect-timeout: 5000
+      # 讀取逾時時間 (單位：毫秒)
       read-timeout: 10000
+  # 日誌記錄相關設定
   log:
+    # 全域預設的日誌記錄層級
     level: INFO
+    # 針對特定類別或套件設定日誌層級
     category:
+      # 將 'org.jay' 套件下的日誌層級設定為 DEBUG
       "org.jay":
         level: DEBUG
+    # 控制台日誌輸出設定
     console:
+      # 設定日誌輸出的格式
+      # %d{yyyy-MM-dd HH:mm:ss,SSS}: 日期與時間
+      # %-5p: 日誌層級 (例如 INFO, DEBUG)
+      # [%c{1.}]: 類別名稱 (簡寫)
+      # (%t): 執行緒名稱
+      # %s: 日誌訊息
+      # %e: 例外堆疊追蹤
+      # %n: 換行符
       format: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c{1.}] (%t) %s%e%n"
