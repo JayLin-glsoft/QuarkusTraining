@@ -4,7 +4,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import org.jay.model.YouBikeStation;
+import org.jay.entity.YouBikeStationEntity;
 
 import java.util.List;
 
@@ -12,5 +12,5 @@ import java.util.List;
 public interface YouBikeApiClient {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    List<YouBikeStation> getYouBikeList();
+    List<YouBikeStationEntity> getYouBikeList();
 }
