@@ -22,6 +22,17 @@ quarkus:
       connect-timeout: 5000
       # 讀取逾時時間 (單位：毫秒)
       read-timeout: 10000
+  # MongoDB 資料庫設定
+  mongodb:
+      # 資料庫連接字串
+      connection-string: "mongodb://localhost:27017"
+      # 資料庫名稱
+      database: "youbike_db"
+  # Redis 設定
+  redis:
+      # Redis 伺服器的主機名稱
+      host: "redis://localhost:6379"
+      # Redis 伺服器的連接埠
   # 日誌記錄相關設定
   log:
     # 全域預設的日誌記錄層級
