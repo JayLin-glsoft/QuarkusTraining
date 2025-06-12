@@ -24,11 +24,11 @@ jobs:
         uses: actions/checkout@v4
 
       # 步驟二：設定 Java 環境
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           # 指定要使用的 Java 版本
-          java-version: '17'
+          java-version: '21'
           # 指定 Java 發行版 (通常使用 temurin)
           distribution: 'temurin'
           # 快取 Maven 的依賴項，可以加速後續的建置
