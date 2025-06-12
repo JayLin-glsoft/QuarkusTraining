@@ -1,0 +1,40 @@
+# 這個工作流程的名稱，將會顯示在 GitHub Actions 頁面上
+name: Java CI with Maven
+
+# 設定觸發此工作流程的事件
+on:
+  # 當有程式碼被推送到 'main' 分支時觸發
+  push:
+    branches: [ "main" ]
+  # 當有拉取請求 (Pull Request) 被提交到 'main' 分支時觸發
+  pull_request:
+    branches: [ "main" ]
+
+# 定義工作流程中要執行的所有任務 (jobs)
+jobs:
+  # 我們定義了一個名為 'build' 的任務
+  build:
+    # 指定此任務運行的環境，'ubuntu-latest' 是一個預設包含 Docker 的 Linux 環境
+    runs-on: ubuntu-latest
+
+    # 定義此任務要執行的步驟 (steps)
+    steps:
+      # 步驟一：從 GitHub 儲存庫中 'checkout' (下載) 您的程式碼
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 步驟二：設定 Java 環境
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          # 指定要使用的 Java 版本
+          java-version: '17'
+          # 指定 Java 發行版 (通常使用 temurin)
+          distribution: 'temurin'
+          # 快取 Maven 的依賴項，可以加速後續的建置
+          cache: maven
+
+      # 步驟三：使用 Maven Wrapper 執行測試
+      # Quarkus Dev Services 會在此步驟中自動啟動所需的 Docker 容器 (MongoDB, Redis)
+      - name: Run tests with Maven
+        run: ./mvnw test
