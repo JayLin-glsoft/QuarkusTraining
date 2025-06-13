@@ -32,7 +32,6 @@ quarkus:
   redis:
       # Redis 伺服器的主機名稱
       host: "redis://localhost:6379"
-      # Redis 伺服器的連接埠
   # 日誌記錄相關設定
   log:
     # 全域預設的日誌記錄層級

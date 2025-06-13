@@ -19,7 +19,7 @@ import java.util.Optional;
 public class YouBikeService {
     private static final Logger LOG = Logger.getLogger(YouBikeService.class.getName());
     private static final String CACHE_KEY_PREFIX = "station:";
-    private static final long CACHE_TTL_SECONDS = 30; // 快取 1 小時
+    private static final long CACHE_TTL_SECONDS = 3600; // 快取 1 小時
 
     @Inject
     @RestClient
@@ -28,14 +28,8 @@ public class YouBikeService {
     @Inject
     YouBikeStationMapper stationMapper;
 
-    private final ValueCommands<String, YouBikeStationEntity> stationCache;
-
-    // 使用 CDI 的建構子注入來初始化 Redis 命令
-    public YouBikeService(RedisDataSource redisDataSource) {
-        // 創建一個針對 String key 和 YouBikeStationEntity value 的 ValueCommands
-        // Quarkus 會自動處理序列化/反序列化 (需要 quarkus-resteasy-reactive-jackson 或類似的依賴)
-        stationCache = redisDataSource.value(YouBikeStationEntity.class);
-    }
+    @Inject
+    RedisDataSource redisDataSource;
 
     @ConfigProperty(name = "quarkus.rest-client.you-bike-api.url")
     String apiClientUrl;
@@ -56,6 +50,7 @@ public class YouBikeService {
 
         // 1. 從 Redis 快取查詢
         try {
+            ValueCommands<String, YouBikeStationEntity> stationCache = redisDataSource.value(YouBikeStationEntity.class);
             YouBikeStationEntity cachedStation = stationCache.get(cacheKey);
             if (cachedStation != null) {
                 LOG.infof("Cache HIT for station ID: %s", stationId);
@@ -73,6 +68,7 @@ public class YouBikeService {
         if (stationFromDb != null) {
             // 3. 將從 DB 查到的資料寫入快取，並設定 TTL
             try {
+                ValueCommands<String, YouBikeStationEntity> stationCache = redisDataSource.value(YouBikeStationEntity.class);
                 stationCache.setex(cacheKey, CACHE_TTL_SECONDS, stationFromDb);
                 LOG.infof("Station ID %s data stored in cache.", stationId);
             } catch (Exception e) {
