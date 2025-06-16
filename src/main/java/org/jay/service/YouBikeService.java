@@ -12,6 +12,7 @@ import org.jay.entity.YouBikeStationEntity;
 import org.jay.mapper.YouBikeStationMapper;
 import org.jboss.logging.Logger;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,6 +70,7 @@ public class YouBikeService {
             // 3. 將從 DB 查到的資料寫入快取，並設定 TTL
             try {
                 ValueCommands<String, YouBikeStationEntity> stationCache = redisDataSource.value(YouBikeStationEntity.class);
+                stationFromDb.setLastUpdate(Instant.now().toString());
                 stationCache.setex(cacheKey, CACHE_TTL_SECONDS, stationFromDb);
                 LOG.infof("Station ID %s data stored in cache.", stationId);
             } catch (Exception e) {

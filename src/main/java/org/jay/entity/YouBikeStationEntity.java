@@ -55,4 +55,7 @@ public class YouBikeStationEntity extends PanacheMongoEntityBase {
 
     @JsonProperty("act") // 全站禁用狀態 (0:禁用; 1:啟用)
     String active;
+
+    @JsonProperty("lastUpdate") // 最後更新時間 (格式範例: 2023-11-20T15:05:14Z)
+    String lastUpdate; // 使用 ISO 8601 格式的時間戳記
 }
