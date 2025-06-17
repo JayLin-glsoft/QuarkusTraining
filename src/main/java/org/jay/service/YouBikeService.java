@@ -1,20 +1,20 @@
 package org.jay.service;
 
-import io.quarkus.redis.datasource.RedisDataSource;
-import io.quarkus.redis.datasource.value.ValueCommands;
+import io.quarkus.cache.CacheInvalidateAll;
+import io.quarkus.cache.CacheResult;
+import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jay.client.YouBikeApiClient;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jay.dto.YouBikeStationDTO;
-import org.jay.entity.YouBikeStationEntity;
-import org.jay.mapper.YouBikeStationMapper;
+import org.jay.model.dto.YouBikeStationDTO;
+import org.jay.model.entity.YouBikeStationEntity;
+import org.jay.model.mapper.YouBikeStationMapper;
 import org.jboss.logging.Logger;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @ApplicationScoped
 public class YouBikeService {
@@ -28,9 +28,6 @@ public class YouBikeService {
 
     @Inject
     YouBikeStationMapper stationMapper;
-
-    @Inject
-    RedisDataSource redisDataSource;
 
     @ConfigProperty(name = "quarkus.rest-client.you-bike-api.url")
     String apiClientUrl;
@@ -46,59 +43,25 @@ public class YouBikeService {
     /**
      * 查詢指定 ID 的站點，實作 Cache-Aside 模式
      */
-    public Optional<YouBikeStationDTO> getStationById(String stationId) {
-        String cacheKey = CACHE_KEY_PREFIX + stationId;
-
-        // 1. 從 Redis 快取查詢
-        try {
-            ValueCommands<String, YouBikeStationEntity> stationCache = redisDataSource.value(YouBikeStationEntity.class);
-            YouBikeStationEntity cachedStation = stationCache.get(cacheKey);
-            if (cachedStation != null) {
-                LOG.infof("Cache HIT for station ID: %s", stationId);
-                return Optional.of(stationMapper.toDto(cachedStation));
-            }
-        } catch (Exception e) {
-            LOG.errorf(e, "Error accessing Redis cache for key: %s", cacheKey);
-        }
-
-        LOG.infof("Cache MISS for station ID: %s. Fetching from DB.", stationId);
-
-        // 2. 快取未命中，從 MongoDB 查詢
+    @CacheResult(cacheName = "stations")
+    public YouBikeStationDTO getStationById(String stationId) {
         YouBikeStationEntity stationFromDb = YouBikeStationEntity.findById(stationId);
-
         if (stationFromDb != null) {
-            // 3. 將從 DB 查到的資料寫入快取，並設定 TTL
-            try {
-                ValueCommands<String, YouBikeStationEntity> stationCache = redisDataSource.value(YouBikeStationEntity.class);
-                stationFromDb.setLastUpdate(Instant.now().toString());
-                stationCache.setex(cacheKey, CACHE_TTL_SECONDS, stationFromDb);
-                LOG.infof("Station ID %s data stored in cache.", stationId);
-            } catch (Exception e) {
-                LOG.errorf(e, "Error writing to Redis cache for key: %s", cacheKey);
-            }
-            return Optional.of(stationMapper.toDto(stationFromDb));
+            LOG.infof("Found station ID %s in DB.", stationId);
+            return stationMapper.toDto(stationFromDb);
         }
-
-        LOG.warnf("Station ID %s not found in DB.", stationId);
-        return Optional.empty();
+        throw new NoSuchElementException("YouBike station not found with id: " + stationId);
     }
 
     /**
      * 從外部 API 匯入資料到 MongoDB
      */
-    public long importStations() {
-        try {
-            LOG.infof("Fetching YouBike data from URL: %s", apiClientUrl);
-            List<YouBikeStationEntity> youBikeList = youBikeApiClient.getYouBikeList();
-
-            // 使用 Panache 的 persist 方法儲存資料
-            YouBikeStationEntity.persistOrUpdate(youBikeList);
-
-            LOG.infof("Successfully imported %d stations into MongoDB.", youBikeList.size());
-            return youBikeList.size();
-        } catch (Exception e) {
-            LOG.error("Exception during data import", e);
-            return 0;
-        }
+    @Scheduled(identity = "import-stations-task", every = "5m", delayed = "5s")
+    @CacheInvalidateAll(cacheName = "stations")
+    public void importStations() {
+        LOG.info("Starting import of YouBike stations from API: " + apiClientUrl);
+        List<YouBikeStationEntity> youBikeList = youBikeApiClient.getYouBikeList();
+        // 使用 Panache 的 persist 方法儲存資料
+        YouBikeStationEntity.persistOrUpdate(youBikeList);
     }
 }

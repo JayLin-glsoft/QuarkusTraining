@@ -1,8 +1,8 @@
-package org.jay.mapper;
+package org.jay.model.mapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import org.jay.dto.YouBikeStationDTO;
-import org.jay.entity.YouBikeStationEntity;
+import org.jay.model.dto.YouBikeStationDTO;
+import org.jay.model.entity.YouBikeStationEntity;
 import org.mapstruct.Mapper;
 
 import java.util.List;

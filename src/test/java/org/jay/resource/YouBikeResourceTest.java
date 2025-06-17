@@ -3,7 +3,7 @@ package org.jay.resource;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import org.jay.dto.YouBikeStationDTO;
+import org.jay.model.dto.YouBikeStationDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -11,7 +11,7 @@ import org.jay.service.YouBikeService;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
@@ -46,28 +46,34 @@ public class YouBikeResourceTest {
 
     @Test
     void testImportEndpoint_Success() {
-        // Arrange: 模擬當 youBikeService.importStations() 被呼叫時，回傳成功匯入 50 筆
-        Mockito.when(youBikeService.importStations()).thenReturn(50L);
+        // Arrange: 模擬當 youBikeService.importStations() 被呼叫時，什麼都不做 (因為是 void 方法)
+        Mockito.doNothing().when(youBikeService).importStations();
 
         // Act & Assert
         given()
                 .when().post("/api/youbike/import")
                 .then()
-                .statusCode(200)
-                .body("message", containsString("Successfully imported 50 stations"));
+                .statusCode(204); // 驗證 void 方法成功時回傳 204 No Content
+
+        // Verify: 確認 service 的 importStations 方法確實被呼叫了一次
+        Mockito.verify(youBikeService, Mockito.times(1)).importStations();
     }
 
     @Test
     void testImportEndpoint_Failure() {
-        // Arrange: 模擬當 youBikeService.importStations() 被呼叫時，回傳 0 (表示失敗)
-        Mockito.when(youBikeService.importStations()).thenReturn(0L);
+        // Arrange: 模擬當 youBikeService.importStations() 被呼叫時，拋出一個執行時例外
+        String errorMessage = "Simulated database connection error";
+        Mockito.doThrow(new RuntimeException(errorMessage))
+                .when(youBikeService)
+                .importStations();
 
-        // Act & Assert
+        // Act & Assert: 驗證 ExceptionHandler 是否正確處理例外
         given()
                 .when().post("/api/youbike/import")
                 .then()
-                .statusCode(500)
-                .body("error", containsString("Failed to import station data"));
+                .statusCode(400) // 根據您的 ExceptionHandler.java，應回傳 400
+                .contentType(ContentType.JSON) // ExceptionHandler 回傳的是純文字
+                .body("message", is(errorMessage)); // 驗證回應內容就是我們的例外訊息
     }
 
     @Test
@@ -96,14 +102,14 @@ public class YouBikeResourceTest {
         given()
                 .when().get("/api/youbike/all")
                 .then()
-                .statusCode(404)
-                .body("message", containsString("No YouBike stations data in the database"));
+                .statusCode(200)
+                .body("$", hasSize(0));
     }
 
     @Test
     void testGetStationById_Success() {
         // Arrange: 模擬當呼叫 youBikeService.getStationById() 且 ID 為 "500101001" 時，回傳 stationDto1
-        Mockito.when(youBikeService.getStationById("500101001")).thenReturn(Optional.of(stationDto1));
+        Mockito.when(youBikeService.getStationById("500101001")).thenReturn(stationDto1);
 
         // Act & Assert
         given()
@@ -118,17 +124,19 @@ public class YouBikeResourceTest {
 
     @Test
     void testGetStationById_NotFound() {
-        // Arrange: 模擬當呼叫 youBikeService.getStationById() 且 ID 為 "99999" 時，回傳空的 Optional
+        // Arrange: 模擬當呼叫 youBikeService.getStationById() 且 ID 為 "99999" 時，回傳 NoSuchElementException
         String nonExistentId = "99999";
-        Mockito.when(youBikeService.getStationById(nonExistentId)).thenReturn(Optional.empty());
+        Mockito.when(youBikeService.getStationById(nonExistentId))
+                .thenThrow(new NoSuchElementException("YouBike station not found with id: " + nonExistentId));
 
         // Act & Assert
         given()
                 .pathParam("id", nonExistentId)
                 .when().get("/api/youbike/station/{id}")
                 .then()
-                .statusCode(404)
-                .body("message", is("Station with ID " + nonExistentId + " not found."));
+                .statusCode(400)
+                .contentType(ContentType.JSON)
+                .body("message", is("YouBike station not found with id: " + nonExistentId));
     }
 
     @Test
@@ -144,6 +152,7 @@ public class YouBikeResourceTest {
                 .when().get("/api/youbike/station/{id}")
                 .then()
                 .statusCode(400)
-                .body("error", is("Station ID cannot be empty."));
+                .contentType(ContentType.JSON)
+                .body("message", is("Station ID cannot be empty."));
     }
 }

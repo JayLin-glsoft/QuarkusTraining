@@ -1,4 +1,4 @@
-package org.jay.dto;
+package org.jay.model.dto;
 
 import lombok.Data;
 

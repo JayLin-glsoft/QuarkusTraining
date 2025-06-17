@@ -4,7 +4,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import org.jay.entity.YouBikeStationEntity;
+import org.jay.model.entity.YouBikeStationEntity;
 
 import java.util.List;
 
