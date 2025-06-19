@@ -1,4 +1,4 @@
-package org.jay.model.entity;
+package org.jay.youbike.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -3,11 +3,11 @@ package org.jay.resource;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import org.jay.model.dto.YouBikeStationDTO;
+import org.jay.youbike.model.dto.YouBikeStationDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.jay.service.YouBikeService;
+import org.jay.youbike.service.YouBikeService;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +15,6 @@ import java.util.NoSuchElementException;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 
 @QuarkusTest

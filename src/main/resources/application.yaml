@@ -4,6 +4,8 @@ quarkus:
   http:
     # 設定應用程式監聽的 HTTP 連接埠
     port: 8080
+    auth:
+      proactive: false # 將主動驗證關閉，改為延遲驗證 (lazy)
   # 應用程式基本資訊設定
   application:
     # 應用程式名稱
@@ -32,6 +34,26 @@ quarkus:
   redis:
       # Redis 伺服器的主機名稱
       host: "redis://localhost:6379"
+  hibernate-orm:
+    # 當設定為 drop-and-create 時，每次 Quarkus 啟動都會清除並重建資料庫結構。
+    # 這在開發初期非常方便，但在生產環境中應改為 'validate' 或 'update'。
+    database:
+      generation: drop-and-create
+    # 在主控台顯示執行的 SQL 語句，方便開發時除錯
+    log:
+      sql: true
+  datasource:
+    db-kind: mysql
+    username: root
+    password: jay12345
+    jdbc:
+      url: jdbc:mysql://localhost:9527/user_db?createDatabaseIfNotExist=true
+  # OpenAPI / Swagger UI 設定
+  smallrye-openapi:
+    path: /openapi
+  swagger-ui:
+    path: /q/swagger-ui
+    always-include: true
   # 日誌記錄相關設定
   log:
     # 全域預設的日誌記錄層級
@@ -52,3 +74,21 @@ quarkus:
       # %e: 例外堆疊追蹤
       # %n: 換行符
       format: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c{1.}] (%t) %s%e%n"
+mp:
+  jwt:
+    verify:
+      # 簽發 JWT 的單位名稱，登入 API 產生的 token 中 'iss' 欄位會是這個值
+      issuer: https://myapp.com/issuer
+      # 用於驗證 JWT 簽章的公鑰位置。Quarkus 會從 classpath 中尋找這個檔案。
+      publickey:
+        location: META-INF/resources/publicKey.pem
+# --- SmallRye JWT Configuration ---
+smallrye:
+  jwt:
+    sign:
+      key:
+        location: META-INF/resources/privateKey.pem
+# 自訂的 JWT 產生設定
+app:
+  jwt:
+    duration-in-seconds: 3600 # Token 有效期 (秒)
