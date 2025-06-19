@@ -15,47 +15,47 @@ import org.bson.codecs.pojo.annotations.BsonId;
 public class YouBikeStationEntity extends PanacheMongoEntityBase {
     @BsonId
     @JsonProperty("sno") // 站點代號
-    String stationNo;
+    private String stationNo;
 
     @JsonProperty("sna") // 站點名稱(中文)
-    String stationName;
+    private String stationName;
 
     @JsonProperty("snaen") // 站點名稱(英文)
-    String stationNameEn;
+    private String stationNameEn;
 
     @JsonProperty("total") // 站點總停車格數
-    int totalSpaces;
+    private int totalSpaces;
 
     @JsonProperty("available_rent_bikes") // 目前可借車輛數
-    int availableBikes;
+    private int availableBikes;
 
     @JsonProperty("sarea") // 站點區域(中文)
-    String area;
+    private String area;
 
     @JsonProperty("sareaen") // 站點區域(英文)
-    String areaEn;
+    private String areaEn;
 
     @JsonProperty("updateTime") // 資料更新時間 (格式範例: 20231120150514)
-    String updateTime;
+    private String updateTime;
 
     @JsonProperty("latitude") // 緯度
-    double latitude;
+    private double latitude;
 
     @JsonProperty("longitude") // 經度
-    double longitude;
+    private double longitude;
 
     @JsonProperty("ar") // 地址(中文)
-    String address;
+    private String address;
 
     @JsonProperty("aren") // 地址(英文)
-    String addressEn;
+    private String addressEn;
 
     @JsonProperty("available_return_bikes") // 目前空位數
-    int availableSpaces;
+    private int availableSpaces;
 
     @JsonProperty("act") // 全站禁用狀態 (0:禁用; 1:啟用)
-    String active;
+    private String active;
 
     @JsonProperty("lastUpdate") // 最後更新時間 (格式範例: 2023-11-20T15:05:14Z)
-    String lastUpdate; // 使用 ISO 8601 格式的時間戳記
+    private String lastUpdate; // 使用 ISO 8601 格式的時間戳記
 }
