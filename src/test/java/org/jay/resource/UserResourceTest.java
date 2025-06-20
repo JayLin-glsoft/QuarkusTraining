@@ -1,5 +1,6 @@
 package org.jay.resource;
 
+import io.quarkus.security.AuthenticationFailedException;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -162,6 +163,7 @@ public class UserResourceTest {
     @Test
     @DisplayName("GET /me - 未帶 Token 應回傳 401")
     void testGetMe_Unauthorized() {
+        Mockito.when(userService.getCurrentUser()).thenThrow(new AuthenticationFailedException());
         // Act & Assert
         given()
                 .when().get("/api/users/me")
