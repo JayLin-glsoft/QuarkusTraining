@@ -19,8 +19,6 @@ import java.util.NoSuchElementException;
 @ApplicationScoped
 public class YouBikeService {
     private static final Logger LOG = Logger.getLogger(YouBikeService.class.getName());
-    private static final String CACHE_KEY_PREFIX = "station:";
-    private static final long CACHE_TTL_SECONDS = 3600; // 快取 1 小時
 
     @Inject
     @RestClient

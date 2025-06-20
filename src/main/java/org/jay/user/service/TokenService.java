@@ -34,7 +34,6 @@ public class TokenService {
             roles.add("admin");
         }
 
-
         return Jwt.issuer(issuer) // 簽發者，需與 application.yml 中設定的 mp.jwt.verify.issuer 相同
                 .upn(user.getEmail()) // User Principal Name，通常是使用者名稱或 email
                 .groups(roles) // 使用者的角色群組
