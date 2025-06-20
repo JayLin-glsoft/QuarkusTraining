@@ -93,3 +93,18 @@ smallrye:
 app:
   jwt:
     duration-in-seconds: 3600 # Token 有效期 (秒)
+# --- Test Profile ---
+# 只有在執行測試時，以下的設定才會生效
+"%test":
+  quarkus:
+    # 覆寫測試時的資料庫種類為 H2 (記憶體資料庫)
+    datasource:
+      db-kind: h2
+      jdbc:
+        # H2 的記憶體模式連線 URL
+        url: jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1
+    # 覆寫測試時的 Hibernate ORM 設定
+    hibernate-orm:
+      database:
+        # 在測試時，每次都清空並重建資料庫結構
+        generation: drop-and-create
