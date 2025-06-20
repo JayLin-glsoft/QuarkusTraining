@@ -11,7 +11,10 @@ import java.util.Map;
 public class ForbiddenExceptionMapper implements ExceptionMapper<ForbiddenException> {
     @Override
     public Response toResponse(ForbiddenException exception) {
-        Map<String, String> errorResponse = Map.of("message", exception.getMessage());
+        Map<String, String> errorResponse = Map.of(
+                "error", "Forbidden",
+                "message", exception.getMessage()
+        );
         return Response.status(Response.Status.FORBIDDEN)
                 .entity(errorResponse)
                 .build();

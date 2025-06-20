@@ -11,7 +11,10 @@ import java.util.Map;
 public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundException> {
     @Override
     public Response toResponse(NotFoundException exception) {
-        Map<String, String> errorResponse = Map.of("message", exception.getMessage());
+        Map<String, String> errorResponse = Map.of(
+                "error", "NotFound",
+                "message", exception.getMessage()
+        );
         return Response.status(Response.Status.NOT_FOUND)
                 .entity(errorResponse)
                 .build();

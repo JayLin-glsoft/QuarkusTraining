@@ -4,8 +4,9 @@ quarkus:
   http:
     # 設定應用程式監聽的 HTTP 連接埠
     port: 8080
+  rest:
     auth:
-      proactive: false # 將主動驗證關閉，改為延遲驗證 (lazy)
+      challenge-on-auth-failure: false
   # 應用程式基本資訊設定
   application:
     # 應用程式名稱

@@ -10,7 +10,10 @@ import java.util.Map;
 public class ExceptionHandler implements ExceptionMapper<Exception> {
     @Override
     public Response toResponse(Exception exception) {
-        Map<String, String> errorResponse = Map.of("message", exception.getMessage());
+        Map<String, String> errorResponse = Map.of(
+                "error", "UncaughtException",
+                "message", exception.getMessage()
+        );
 
         return Response.status(Response.Status.BAD_REQUEST)
                 .entity(errorResponse)
