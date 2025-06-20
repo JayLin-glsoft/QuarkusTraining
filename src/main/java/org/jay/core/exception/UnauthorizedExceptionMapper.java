@@ -1,4 +1,4 @@
-package org.jay.core;
+package org.jay.core.exception;
 
 import io.quarkus.security.UnauthorizedException;
 import jakarta.ws.rs.core.Response;
@@ -15,7 +15,7 @@ public class UnauthorizedExceptionMapper implements ExceptionMapper<Unauthorized
                 "message", "Token is invalid or expired. Please log in again."
         );
 
-        return Response.status(Response.Status.UNAUTHORIZED) // 回傳 401
+        return Response.status(Response.Status.UNAUTHORIZED)
                 .entity(errorResponse)
                 .build();
     }

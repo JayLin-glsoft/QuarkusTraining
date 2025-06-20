@@ -18,8 +18,6 @@ import org.jay.user.model.mapper.UserMapper;
 import org.jay.user.repository.UserRepository;
 import org.jay.user.service.TokenService;
 
-import java.util.Set;
-
 import static io.quarkus.arc.ComponentsProvider.LOG;
 
 @Path("/api/users")
@@ -47,11 +45,11 @@ public class UserResource {
     @Transactional
     public Response register(@Valid RegisterRequest request) {
         LOG.infof("Jay Test: register user %s", request.username);
-        if (userRepository.findByUsername(request.username) != null) {
-            throw new IllegalArgumentException("Username already exists");
+        if (userRepository.findByEmail(request.email) != null) {
+            throw new IllegalArgumentException("This user already exists");
         }
-        User user = userRepository.add(request.username, request.password, request.email);
-        String token = tokenService.generateToken(user.username, Set.of("user"));
+        User user = userRepository.add(request.username, request.password, request.email, false);
+        String token = tokenService.generateToken(user);
         // 回傳 201 Created 並附上 token
         return Response.status(Response.Status.CREATED).entity(new TokenResponse(token)).build();
     }
@@ -60,11 +58,11 @@ public class UserResource {
     @Path("/login")
     @PermitAll
     public Response login(@Valid LoginRequest request) {
-        User user = userRepository.findByUsername(request.username);
+        User user = userRepository.findByEmail(request.email);
         if (user != null && user.checkPassword(request.password)) {
             // 密碼正確，簽發 JWT
             // 簡單起見，我們給所有使用者 'user' 角色
-            String token = tokenService.generateToken(user.username, Set.of("user"));
+            String token = tokenService.generateToken(user);
             return Response.ok(new TokenResponse(token)).build();
         }
         throw new IllegalArgumentException("Invalid username or password");
@@ -72,11 +70,11 @@ public class UserResource {
 
     @GET
     @Path("/me")
-    @RolesAllowed("user") // 只有擁有 'user' 角色的 JWT 才能存取
+    @RolesAllowed({"user", "admin"}) // 允許 'user' 和 'admin' 角色存取
     public Response getMe() {
         // 從已驗證的 JWT 中獲取使用者名稱
-        String username = jwt.getName();
-        User user = userRepository.findByUsername(username);
+        String email = jwt.getName();
+        User user = userRepository.findByEmail(email);
         // 使用 Mapper 將 Entity 轉換為安全的 DTO
         UserProfileResponse responseDto = userMapper.toUserProfileResponse(user);
         return Response.ok(responseDto).build();
@@ -84,22 +82,26 @@ public class UserResource {
 
     @PUT
     @Path("/{id}")
-    @RolesAllowed("user")
+    @RolesAllowed({"user", "admin"}) // 允許 'user' 和 'admin' 角色存取
     @Transactional
     public Response updateUser(@PathParam("id") Long id, RegisterRequest request) {
-        String currentUsername = jwt.getName(); // 獲取當前 token 的使用者
         User userToUpdate = userRepository.findById(id);
-
         if (userToUpdate == null) {
             throw new NotFoundException("User not found");
         }
 
-        // 簡單的權限檢查：確保使用者只能修改自己的資料
-        if (!userToUpdate.username.equals(currentUsername)) {
-            throw new IllegalArgumentException("You can only update your own profile");
+        // 檢查是否有 admin 權限
+        boolean isAdmin = jwt.getGroups().contains("admin");
+        // 檢查是否為自己
+        boolean isSelf = jwt.getName().equals(userToUpdate.getEmail());
+
+        // 如果不是管理者，也不是本人，就拋出權限不足的例外
+        if (!isAdmin && !isSelf) {
+            throw new ForbiddenException("You can only update your own profile.");
         }
 
-        userToUpdate.email = request.email;
+        userToUpdate.setUsername(request.username);
+        userToUpdate.setEmail(request.email);
         if (request.password != null && !request.password.isEmpty()) {
             userToUpdate.setPassword(request.password);
         }
@@ -109,18 +111,22 @@ public class UserResource {
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed("user")
+    @RolesAllowed({"user", "admin"}) // 允許 'user' 和 'admin' 角色存取
     @Transactional
     public Response deleteUser(@PathParam("id") Long id) {
-        String currentUsername = jwt.getName();
         User userToDelete = userRepository.findById(id);
-
         if (userToDelete == null) {
             throw new NotFoundException("User not found");
         }
 
-        if (!userToDelete.username.equals(currentUsername)) {
-            throw new IllegalArgumentException("You can only delete your own profile");
+        // 檢查是否有 admin 權限
+        boolean isAdmin = jwt.getGroups().contains("admin");
+        // 檢查是否為自己
+        boolean isSelf = jwt.getName().equals(userToDelete.getEmail());
+
+        // 如果不是管理者，也不是本人，就拋出權限不足的例外
+        if (!isAdmin && !isSelf) {
+            throw new ForbiddenException("You can only update your own profile.");
         }
 
         userRepository.delete(userToDelete);

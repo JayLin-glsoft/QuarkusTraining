@@ -1,18 +1,16 @@
-package org.jay.core;
+package org.jay.core.exception;
 
-import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-
 import java.util.Map;
 
 @Provider
-public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundException> {
+public class IllegalArgumentExceptionMapper implements ExceptionMapper<IllegalArgumentException> {
     @Override
-    public Response toResponse(NotFoundException exception) {
+    public Response toResponse(IllegalArgumentException exception) {
         Map<String, String> errorResponse = Map.of("message", exception.getMessage());
-        return Response.status(Response.Status.NOT_FOUND) // 回傳 404
+        return Response.status(Response.Status.BAD_REQUEST)
                 .entity(errorResponse)
                 .build();
     }

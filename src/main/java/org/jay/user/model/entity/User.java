@@ -6,9 +6,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Tolerate;
 
 import java.time.Instant;
 
@@ -20,15 +22,28 @@ import java.time.Instant;
 public class User extends PanacheEntity {
 
     @Column(unique = true, nullable = false)
-    public String username;
+    private String username;
 
     @Column(nullable = false)
-    public String password;
+    private String password;
 
     @Column(unique = true, nullable = false)
-    public String email;
+    private String email;
 
-    public Instant createdTime;
+    @Column(nullable = false)
+    private boolean isAdmin = false;
+
+    private Instant createdTime;
+
+    // *** 這是關鍵：建立一個帶有 Builder 的客製化建構子 ***
+    @Builder
+    public User(String username, String rawPassword, String email, boolean isAdmin) {
+        this.username = username;
+        this.password = BcryptUtil.bcryptHash(rawPassword); // 在建構時就雜湊
+        this.email = email;
+        this.isAdmin = isAdmin;
+        this.createdTime = Instant.now();
+    }
 
     @PrePersist // 在儲存到資料庫前執行
     protected void onCreate() {
