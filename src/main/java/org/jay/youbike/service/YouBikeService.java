@@ -1,4 +1,4 @@
-package org.jay.service;
+package org.jay.youbike.service;
 
 import io.quarkus.cache.CacheInvalidateAll;
 import io.quarkus.cache.CacheResult;
@@ -6,11 +6,11 @@ import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jay.client.YouBikeApiClient;
+import org.jay.youbike.client.YouBikeApiClient;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jay.model.dto.YouBikeStationDTO;
-import org.jay.model.entity.YouBikeStationEntity;
-import org.jay.model.mapper.YouBikeStationMapper;
+import org.jay.youbike.model.dto.YouBikeStationDTO;
+import org.jay.youbike.model.entity.YouBikeStationEntity;
+import org.jay.youbike.model.mapper.YouBikeStationMapper;
 import org.jboss.logging.Logger;
 
 import java.util.List;
@@ -19,8 +19,6 @@ import java.util.NoSuchElementException;
 @ApplicationScoped
 public class YouBikeService {
     private static final Logger LOG = Logger.getLogger(YouBikeService.class.getName());
-    private static final String CACHE_KEY_PREFIX = "station:";
-    private static final long CACHE_TTL_SECONDS = 3600; // 快取 1 小時
 
     @Inject
     @RestClient

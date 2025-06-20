@@ -1,4 +1,4 @@
-package org.jay.model.dto;
+package org.jay.youbike.model.dto;
 
 import lombok.Data;
 

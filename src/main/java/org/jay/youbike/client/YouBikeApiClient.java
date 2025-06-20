@@ -1,10 +1,10 @@
-package org.jay.client;
+package org.jay.youbike.client;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import org.jay.model.entity.YouBikeStationEntity;
+import org.jay.youbike.model.entity.YouBikeStationEntity;
 
 import java.util.List;
 
