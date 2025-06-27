@@ -47,8 +47,15 @@ quarkus:
     db-kind: mysql
     username: root
     password: jay12345
-    jdbc:
-      url: jdbc:mysql://localhost:9527/user_db?createDatabaseIfNotExist=true
+#    jdbc:
+#      url: jdbc:mysql://localhost:9527/user_db?createDatabaseIfNotExist=true
+    devservices:
+      image-name: mysql:8.0
+  # --- Kafka 設定 ---
+  kafka:
+    devservices:
+      image-name: redpandadata/redpanda:latest
+      port: 19093
   # OpenAPI / Swagger UI 設定
   smallrye-openapi:
     path: /openapi
@@ -83,6 +90,23 @@ mp:
       # 用於驗證 JWT 簽章的公鑰位置。Quarkus 會從 classpath 中尋找這個檔案。
       publickey:
         location: META-INF/resources/publicKey.pem
+  # Kafka Messaging Configuration
+  messaging:
+    # Kafka Producer configuration for station changes
+    outgoing:
+      station-changes-out:
+        connector: smallrye-kafka
+        topic: youbike.station.changes
+
+    # Kafka Consumer configuration for station changes
+    incoming:
+      station-changes-in:
+        connector: smallrye-kafka
+        topic: youbike.station.changes
+        group:
+          id: youbike-change-processor
+        # If deserialization fails, log the error and move to the next message
+        failure-strategy: dead-letter-queue
 # --- SmallRye JWT Configuration ---
 smallrye:
   jwt:

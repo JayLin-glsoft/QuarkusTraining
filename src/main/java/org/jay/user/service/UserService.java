@@ -68,6 +68,9 @@ public class UserService {
             throw new ForbiddenException("You must be logged in to view your profile.");
         }
         User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
         return userMapper.toUserProfileResponse(user);
     }
 
