@@ -28,7 +28,7 @@ quarkus:
   # MongoDB 資料庫設定
   mongodb:
       # 資料庫連接字串
-      connection-string: "mongodb://localhost:27017"
+#      connection-string: "mongodb://localhost:27017"
       # 資料庫名稱
       database: "youbike_db"
   # Redis 設定
