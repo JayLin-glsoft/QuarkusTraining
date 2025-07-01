@@ -41,3 +41,12 @@
 ### 實作 Swagger 自動產生API文件。
 > [/q/swagger-ui/](http://localhost:8080/q/swagger-ui/)
 > ![week3-swagger.png](image/week3-swagger.png)
+
+## 第四週：Kafka 訊息系統、整合多種資料來源
+
+### Kafka in and out
+> ![week4-kafka-in-out.png](image/week4-kafka-in-out.png)
+
+### 開發一隻 API
+* GET /api/youbike/changes/recent：回傳最近 10 筆異動記錄（讀 Redis，無則查 MySQL）。
+> ![week4-changes.png](image/week4-changes.png)
